@@ -28,16 +28,16 @@ public class MovementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        resetTile();
+        if (tileSelectable)
+        {
+            highlightTile();
+        }
         if (resetPossible)
         {
             resetPiece();
         }
         highlightPiece();
-        if (tileSelectable)
-        {
-            highlightTile();
-        }
-        resetTile();
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -108,12 +108,13 @@ public class MovementManager : MonoBehaviour
 
     public void resetPiece()
     {
-        if(_HighlightPiece != null && resetPossible)
+        if (_Piece != null && resetPossible)
         {
-            Renderer pieceRenderer = _HighlightPiece.transform.GetComponent<Renderer>();
+            Renderer pieceRenderer = _Piece.transform.GetComponent<Renderer>();
             pieceRenderer.material = pieceMaterial;
-            _HighlightPiece = null;
+            _Piece = null;
         }
+        return;
     }
 
     public void highlightPiece()
@@ -127,13 +128,14 @@ public class MovementManager : MonoBehaviour
             {
                 Renderer pieceHighlighter = selectedObject.transform.GetComponent<Renderer>();
                 pieceHighlighter.material = highlightMaterial;
-                _HighlightPiece = selectedObject;
+                _Piece = selectedObject;
             }
             else
             {
                 Debug.Log("selected object in highlight piece is null");
             }
         }
+        return;
     }
 
     public void selectPiece()
@@ -144,12 +146,12 @@ public class MovementManager : MonoBehaviour
         {
             Transform selectedObject = hit.transform;
             Renderer pieceRenderer = selectedObject.transform.GetComponent<Renderer>();
-            pieceRenderer.material = selectingMaterial;
             resetPossible = false;
             tileSelectable = true;
-
+            pieceRenderer.material = selectingMaterial;
             _Piece = selectedObject;
         }
+        return;
     }
 
     public void selectTile()
@@ -171,6 +173,7 @@ public class MovementManager : MonoBehaviour
                 }
             }
         }
+        return;
     }
 
     public void movePiece()
@@ -184,5 +187,6 @@ public class MovementManager : MonoBehaviour
         _Tile = null;
         resetPossible = true;
         tileSelectable = false;
+        return;
     }
 }
