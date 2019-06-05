@@ -99,10 +99,6 @@ public class MovementManager : MonoBehaviour
                 selectedObjectRenderer.material = highlightMaterial;
                 _HighlightTile = selectedObject;
             }
-            else
-            {
-                Debug.Log("selected object in highlight tile is null");
-            }
         }
     }
 
@@ -129,10 +125,6 @@ public class MovementManager : MonoBehaviour
                 Renderer pieceHighlighter = selectedObject.transform.GetComponent<Renderer>();
                 pieceHighlighter.material = highlightMaterial;
                 _Piece = selectedObject;
-            }
-            else
-            {
-                Debug.Log("selected object in highlight piece is null");
             }
         }
         return;

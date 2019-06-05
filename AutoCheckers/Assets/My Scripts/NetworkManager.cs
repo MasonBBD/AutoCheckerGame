@@ -9,26 +9,36 @@ using UnityEngine.UI;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     public bool TriesToConnectToMaster;
-    public bool TriesToConnectToLobby;
+    public bool TriesToCreateRoom;
+    public bool TriesToJoinRoom;
 
     public Button BtnConnectToMaster;
-    public Button BtnConnectToLobby;
+    public Button BtnCreateLobby;
+    public Button BtnJoinLobby;
 
     // Start is called before the first frame update
     void Start()
     {
+        DontDestroyOnLoad(gameObject);
         TriesToConnectToMaster = false;
-        TriesToConnectToLobby = false;
+        TriesToCreateRoom = false;
+        TriesToJoinRoom = false;
     }
 
     void Update()
     {
         BtnConnectToMaster.gameObject.SetActive(!PhotonNetwork.IsConnected && !TriesToConnectToMaster);
-        BtnConnectToLobby.gameObject.SetActive(!PhotonNetwork.IsConnected && !TriesToConnectToMaster && !TriesToConnectToLobby);
+        BtnCreateLobby.gameObject.SetActive(PhotonNetwork.IsConnected && !TriesToConnectToMaster && !TriesToCreateRoom);
+        BtnJoinLobby.gameObject.SetActive(PhotonNetwork.IsConnected && !TriesToConnectToMaster && !TriesToJoinRoom);
     }
 
-    public void OnClickConnectToMaster()
+    public void MasterConnection()
     {
+        PhotonNetwork.OfflineMode = false;
+        PhotonNetwork.NickName = "PlayerName";
+        //PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.GameVersion = "v1";
+
         TriesToConnectToMaster = true;
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -36,6 +46,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)
     {
         base.OnDisconnected(cause);
+        TriesToConnectToMaster = false;
+
         Debug.Log(cause);
     }
 
@@ -43,6 +55,32 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         base.OnConnectedToMaster();
         TriesToConnectToMaster = false;
+        TriesToJoinRoom = true;
         Debug.Log("Connected To Master");
+    }
+
+    public void JoinRoom()
+    {
+        if (!PhotonNetwork.IsConnected)
+            return;
+        PhotonNetwork.JoinRoom("Room 1");
+    }
+
+    public override void OnJoinedRoom()
+    {
+        base.OnJoinedRoom();
+        TriesToJoinRoom = false;
+        SceneManager.LoadScene("BoardGameScene");
+    }
+
+    public void CreateRoom()
+    {
+        if (!PhotonNetwork.IsConnected)
+            return;
+        TriesToCreateRoom = false;
+        TriesToJoinRoom = false;
+        
+        PhotonNetwork.CreateRoom("Room 1");
+        PhotonNetwork.JoinRoom("Room 1");
     }
 }
